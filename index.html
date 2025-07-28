@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Product Catalog Manager</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            padding: 40px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            font-weight: bold;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        input, textarea, select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+
+        button {
+            padding: 12px 25px;
+            background-color: #007bff;
+            border: none;
+            color: white;
+            font-size: 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+
+        button i {
+            margin-right: 8px;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .btn-group {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+        #response {
+            margin-top: 20px;
+            font-weight: bold;
+            color: #333;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Product Catalog Manager</h1>
+        <form id="productForm">
+            <div class="form-group">
+                <label for="productName">Product Name</label>
+                <input type="text" id="productName" name="productName" required>
+            </div>
+
+            <div class="form-group">
+                <label for="description">Description</label>
+                <textarea id="description" name="description" rows="4" required></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="price">Price ($)</label>
+                <input type="number" id="price" name="price" step="0.01" required>
+            </div>
+
+            <div class="form-group">
+                <label for="category">Category</label>
+                <input type="text" id="category" name="category" required>
+            </div>
+
+            <div class="form-group">
+                <label for="sku">SKU (Product ID)</label>
+                <input type="text" id="sku" name="sku" required>
+            </div>
+
+            <div class="btn-group">
+                <button type="submit">
+                    <i class="fas fa-paper-plane"></i> Submit Product
+                </button>
+                <button type="button" onclick="checkAPI()">
+                    <i class="fas fa-plug"></i> Check API
+                </button>
+            </div>
+        </form>
+
+        <p id="response"></p>
+    </div>
+
+    <script>
+        // Handle API check
+        function checkAPI() {
+            fetch('http://127.0.0.1:8000/')
+                .then(res => res.json())
+                .then(data => {
+                    document.getElementById('response').innerText = data.message;
+                })
+                .catch(error => {
+                    document.getElementById('response').innerText = "API not reachable.";
+                });
+        }
+
+        // Handle product form submission (demo purpose only)
+        document.getElementById('productForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            const productData = {
+                productName: document.getElementById('productName').value,
+                description: document.getElementById('description').value,
+                price: document.getElementById('price').value,
+                category: document.getElementById('category').value,
+                sku: document.getElementById('sku').value,
+            };
+
+            // You can change this URL to your backend endpoint
+            fetch('http://127.0.0.1:8000/products', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(productData)
+            })
+            .then(res => res.json())
+            .then(data => {
+                document.getElementById('response').innerText = "Product submitted successfully!";
+                document.getElementById('productForm').reset();
+            })
+            .catch(error => {
+                document.getElementById('response').innerText = "Failed to submit product.";
+            });
+        });
+    </script>
+</body>
+</html>
